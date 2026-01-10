@@ -6,4 +6,7 @@ export default function FactoryHome() {
     </main>
   );
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 87fc96e (Dodano widok Fabryki Portali)
