@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Allfabet — nowoczesne rozwiązania cyfrowe</title>
+<style>
+:root{--bg:#fff;--text:#111;--gray:#f5f5f5;--border:#e0e0e0;--font:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.5;padding:2rem;max-width:1200px;margin:0 auto;overflow-x:hidden}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6rem}
+.logo{font-weight:500;font-size:1.1rem}
+select{font-size:.9rem;background:transparent;border:1px solid var(--border);padding:.4rem .8rem;border-radius:4px;font-family:inherit;cursor:pointer}
+.hero{margin-bottom:6rem}
+.hero h1{font-size:5rem;font-weight:400;letter-spacing:-.04em;line-height:1;margin-bottom:1rem}
+.hero p{font-size:1.5rem;color:#666;font-weight:300}
+.projects-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2rem;margin-bottom:6rem}
+.project-card{min-width:0}
+.project-image{width:100%;height:250px;background:var(--gray);border:1px solid var(--border);margin-bottom:1rem;background-size:cover;background-position:center;position:relative}
+.project-number{position:absolute;bottom:1rem;right:1rem;font-size:.8rem;color:#999}
+.project-title{font-size:1.2rem;font-weight:500;margin-bottom:.3rem;word-wrap:break-word}
+.project-description{font-size:.95rem;color:#555;word-wrap:break-word}
+.contact-section{border-top:1px solid var(--border);padding-top:2rem;margin-bottom:4rem;display:flex;justify-content:space-between}
+.contact-info{text-align:right;color:#555;font-size:.95rem}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;justify-content:center;align-items:center;z-index:2000;backdrop-filter:blur(2px)}
+.modal-overlay.active{display:flex}
+.modal-content{background:#fff;padding:2rem;border-radius:8px;width:100%;max-width:380px}
+.modal-content h3{margin-bottom:1.5rem;font-weight:500;font-size:1.1rem}
+.modal-content input{width:100%;padding:.8rem;border:1px solid var(--border);border-radius:4px;margin-bottom:1rem;font-family:inherit;font-size:.95rem}
+#admin-panel{position:fixed;top:0;right:-520px;width:520px;height:100vh;background:#fff;box-shadow:-5px 0 20px rgba(0,0,0,.12);padding:2rem;transition:right .3s;overflow-y:auto;z-index:1000}
+#admin-panel.open{right:0}
+.admin-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;border-bottom:1px solid var(--border);padding-bottom:1rem}
+.admin-header h2{font-size:1.1rem;font-weight:500}
+.admin-section{margin-bottom:1.5rem}
+.admin-section h3{font-size:.95rem;margin-bottom:.8rem;font-weight:500}
+.form-group{margin-bottom:.8rem}
+.form-group label{display:block;font-size:.8rem;margin-bottom:.3rem;color:#555}
+.form-group input[type=text],.form-group input[type=password],.form-group textarea{width:100%;padding:.5rem;border:1px solid var(--border);font-family:inherit;font-size:.9rem;border-radius:4px}
+.form-group textarea{min-height:70px;resize:vertical}
+.image-preview{width:100%;height:120px;background:var(--gray);border:1px dashed var(--border);margin-top:.5rem;display:flex;align-items:center;justify-content:center;font-size:.8rem;color:#999;background-size:cover;background-position:center;border-radius:4px}
+.btn{background:#111;color:#fff;border:none;padding:.6rem 1.2rem;cursor:pointer;font-size:.9rem;width:100%;border-radius:4px;font-family:inherit}
+.btn:hover{background:#333}
+.btn:disabled{background:#999;cursor:not-allowed}
+.btn-secondary{background:#666}
+.btn-danger{background:#ff4444;padding:.3rem .6rem;font-size:.75rem;width:auto;border-radius:3px}
+.btn-edit{background:#007bff;padding:.3rem .6rem;font-size:.75rem;width:auto;border-radius:3px}
+.admin-list{list-style:none;border-top:1px solid var(--border);max-height:300px;overflow-y:auto}
+.admin-list li{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--border);font-size:.85rem;gap:.5rem}
+.admin-list li span{flex:1;word-break:break-word}
+.admin-list li div{display:flex;gap:.3rem}
+.msg{font-size:.8rem;margin-top:.5rem;padding:.5rem;border-radius:4px;display:none}
+.msg.ok{background:#e8f5e9;color:#2e7d32;display:block}
+.msg.err{background:#ffebee;color:#c62828;display:block}
+/* Lang tabs */
+.lang-tabs{display:flex;flex-wrap:wrap;gap:.3rem;margin-bottom:1rem}
+.lang-tab{padding:.3rem .6rem;font-size:.75rem;border:1px solid var(--border);background:#fff;cursor:pointer;border-radius:3px;font-family:inherit}
+.lang-tab.active{background:#111;color:#fff;border-color:#111}
+.lang-tab.filled{border-color:#4caf50;color:#2e7d32;font-weight:500}
+.lang-tab.active.filled{background:#2e7d32;color:#fff;border-color:#2e7d32}
+.hint{background:#e3f2fd;border:1px solid #90caf9;padding:.7rem;border-radius:4px;font-size:.8rem;color:#555;margin-bottom:1rem}
+@media(max-width:850px){body{padding:1rem}.hero h1{font-size:3rem}.projects-grid{grid-template-columns:1fr}#admin-panel{width:100%;right:-100%}.contact-section{flex-direction:column;gap:1rem}.contact-info{text-align:left}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Allfabet</div>
+  <select id="lang-select"></select>
+</header>
+
+<main>
+  <section class="hero">
+    <h1>Allfabet</h1>
+    <p data-i18n="hero_subtitle">nowoczesne rozwiązania cyfrowe.</p>
+  </section>
+  <section class="projects-grid" id="projects-container"></section>
+  <section class="contact-section">
+    <h2 data-i18n="contact_title">Kontakt</h2>
+    <div class="contact-info" id="contact-display"></div>
+  </section>
+</main>
+
+<div id="login-modal" class="modal-overlay">
+  <div class="modal-content">
+    <h3>Logowanie administratora</h3>
+    <form id="login-form">
+      <input type="password" id="login-password" placeholder="Hasło" required autocomplete="current-password">
+      <div style="display:flex;gap:.5rem">
+        <button type="submit" class="btn" id="login-btn">Zaloguj</button>
+        <button type="button" class="btn btn-secondary" id="login-cancel">Anuluj</button>
+      </div>
+      <div id="login-msg" class="msg"></div>
+    </form>
+  </div>
+</div>
+
+<div id="admin-panel">
+  <div class="admin-header">
+    <h2>Panel Administratora</h2>
+    <button id="close-admin" style="background:none;border:none;font-size:1.6rem;cursor:pointer;line-height:1">&times;</button>
+  </div>
+
+  <div class="admin-section">
+    <h3 id="form-title">Dodaj nowy projekt</h3>
+
+    <div class="hint">
+      Wybierz język poniżej, wpisz tytuł i opis, kliknij „Zapisz w tym języku". Potem przełącz na kolejny język i powtórz. Zielone = wypełnione.
+    </div>
+
+    <div class="lang-tabs" id="proj-lang-tabs"></div>
+
+    <form id="project-form">
+      <input type="hidden" id="edit-id" value="">
+      <div class="form-group">
+        <label>Tytuł projektu <span id="proj-current-lang-label" style="color:#888"></span></label>
+        <input type="text" id="proj-title">
+      </div>
+      <div class="form-group">
+        <label>Opis <span id="proj-current-lang-label2" style="color:#888"></span></label>
+        <textarea id="proj-desc"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Zdjęcie (jedno dla wszystkich języków, max 5MB)</label>
+        <input type="file" id="proj-image" accept="image/*">
+        <div id="image-preview" class="image-preview">Brak zdjęcia</div>
+      </div>
+      <div style="display:flex;gap:.5rem">
+        <button type="submit" class="btn" id="btn-save">Zapisz w tym języku</button>
+        <button type="button" class="btn btn-secondary" id="btn-cancel-edit" style="display:none">Anuluj edycję</button>
+      </div>
+      <div id="proj-msg" class="msg"></div>
+    </form>
+
+    <h3 style="margin-top:1.5rem">Istniejące projekty</h3>
+    <ul class="admin-list" id="admin-list"></ul>
+  </div>
+
+  <div class="admin-section" style="border-top:1px solid var(--border);padding-top:1rem">
+    <h3>Dane kontaktowe</h3>
+    <div class="lang-tabs" id="contact-lang-tabs"></div>
+    <form id="contact-form">
+      <div class="form-group">
+        <textarea id="contact-input" placeholder="np. email@allfabet.pl&#10;+48 123 456 789"></textarea>
+      </div>
+      <button type="submit" class="btn">Zapisz kontakt w tym języku</button>
+      <div id="contact-msg" class="msg"></div>
+    </form>
+  </div>
+
+  <div class="admin-section" style="border-top:1px solid var(--border);padding-top:1rem">
+    <h3>Zmiana hasła</h3>
+    <form id="password-form">
+      <div class="form-group">
+        <label>Obecne hasło</label>
+        <input type="password" id="pass-old" required>
+      </div>
+      <div class="form-group">
+        <label>Nowe hasło (min. 6 znaków)</label>
+        <input type="password" id="pass-new" required>
+      </div>
+      <div class="form-group">
+        <label>Powtórz nowe hasło</label>
+        <input type="password" id="pass-confirm" required>
+      </div>
+      <button type="submit" class="btn">Zmień hasło</button>
+      <div id="pass-msg" class="msg"></div>
+    </form>
+  </div>
+
+  <div class="admin-section" style="border-top:1px solid var(--border);padding-top:1rem">
+    <button id="logout-btn" class="btn btn-danger" style="width:100%;padding:.6rem">Wyloguj się</button>
+  </div>
+</div>
+
+<script>
+// ============ TŁUMACZENIA INTERFEJSU ============
+const translations = {
+  pl:{hero_subtitle:"nowoczesne rozwiązania cyfrowe.",contact_title:"Kontakt"},
+  en:{hero_subtitle:"modern digital solutions.",contact_title:"Contact"},
+  zh:{hero_subtitle:"现代数字解决方案。",contact_title:"联系方式"},
+  hi:{hero_subtitle:"आधुनिक डिजिटल समाधान।",contact_title:"संपर्क"},
+  es:{hero_subtitle:"soluciones digitales modernas.",contact_title:"Contacto"},
+  fr:{hero_subtitle:"solutions numériques modernes.",contact_title:"Contact"},
+  ar:{hero_subtitle:"حلول رقمية حديثة.",contact_title:"اتصل بنا"},
+  bn:{hero_subtitle:"আধুনিক ডিজিটাল সমাধান।",contact_title:"যোগাযোগ"},
+  ru:{hero_subtitle:"современные цифровые решения.",contact_title:"Контакты"},
+  pt:{hero_subtitle:"soluções digitais modernas.",contact_title:"Contato"},
+  id:{hero_subtitle:"solusi digital modern.",contact_title:"Kontak"}
+};
+const langNames = {pl:"Polski",en:"English",zh:"中文",hi:"हिन्दी",es:"Español",fr:"Français",ar:"العربية",bn:"বাংলা",ru:"Русский",pt:"Português",id:"Bahasa Indonesia"};
+const allLangs = Object.keys(langNames);
+
+// ============ STAN ============
+const API = 'api.php';
+let currentLang = localStorage.getItem('allfabet_lang') || 'pl';
+let contentLang = 'pl'; // język, w którym admin teraz wypełnia pola
+let state = { projects: [], contact: {} };
+let editingId = null;
+let isLoggedIn = false;
+let currentProject = null; // obiekt projektu aktualnie edytowanego (kopia robocza)
+let currentImage = '';
+
+// ============ POMOCNICZE ============
+const $ = id => document.getElementById(id);
+const esc = s => String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function showMsg(el, text, ok) {
+  el.textContent = text;
+  el.className = 'msg ' + (ok ? 'ok' : 'err');
+  setTimeout(() => { el.className = 'msg'; el.textContent = ''; }, 4000);
+}
+async function api(action, data = null) {
+  const opts = { method: data ? 'POST' : 'GET' };
+  if (data) opts.body = data instanceof FormData ? data : new URLSearchParams(data);
+  const res = await fetch(`${API}?action=${action}`, opts);
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(json.error || 'Błąd serwera');
+  return json;
+}
+
+// ============ RENDEROWANIE PUBLICZNE ============
+function applyTranslations() {
+  const t = translations[currentLang] || translations.en;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const k = el.getAttribute('data-i18n');
+    if (t[k]) el.innerText = t[k];
+  });
+  document.documentElement.lang = currentLang;
+  document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+}
+
+// Wybierz tłumaczenie z fallbackiem: wybrany język → en → pl → cokolwiek
+function pickTrans(translationsObj) {
+  if (!translationsObj) return { title: '', desc: '' };
+  return translationsObj[currentLang] 
+      || translationsObj['en'] 
+      || translationsObj['pl'] 
+      || Object.values(translationsObj)[0] 
+      || { title: '', desc: '' };
+}
+
+function renderProjects() {
+  const c = $('projects-container');
+  c.innerHTML = '';
+  if (!state.projects.length) {
+    c.innerHTML = '<p style="grid-column:1/-1;color:#888">Brak projektów.</p>';
+    return;
+  }
+  state.projects.forEach((p, i) => {
+    const num = String(i+1).padStart(2,'0');
+    const trans = pickTrans(p.translations);
+    const card = document.createElement('div');
+    card.className = 'project-card';
+    const bg = p.image ? `background-image:url('${esc(p.image)}')` : '';
+    card.innerHTML = `
+      <div class="project-image" style="${bg}"><span class="project-number">${num}</span></div>
+      <div class="project-title">${esc(trans.title)}</div>
+      <div class="project-description">${esc(trans.desc)}</div>`;
+    c.appendChild(card);
+  });
+}
+
+function renderContact() {
+  const text = state.contact[currentLang] || state.contact['en'] || state.contact['pl'] || '';
+  $('contact-display').innerHTML = esc(text).replace(/\n/g,'<br>');
+}
+
+// ============ PANEL ADMINA ============
+function renderProjLangTabs(translationsObj = {}) {
+  const tabs = $('proj-lang-tabs');
+  tabs.innerHTML = '';
+  allLangs.forEach(code => {
+    const tab = document.createElement('button');
+    tab.type = 'button';
+    tab.className = 'lang-tab';
+    if (code === contentLang) tab.classList.add('active');
+    if (translationsObj[code]?.title) tab.classList.add('filled');
+    tab.textContent = langNames[code].split(' ')[0];
+    tab.onclick = () => switchContentLang(code);
+    tabs.appendChild(tab);
+  });
+  $('proj-current-lang-label').textContent = `(${langNames[contentLang]})`;
+  $('proj-current-lang-label2').textContent = `(${langNames[contentLang]})`;
+}
+
+function renderContactLangTabs() {
+  const tabs = $('contact-lang-tabs');
+  tabs.innerHTML = '';
+  allLangs.forEach(code => {
+    const tab = document.createElement('button');
+    tab.type = 'button';
+    tab.className = 'lang-tab';
+    if (code === contentLang) tab.classList.add('active');
+    if (state.contact[code]) tab.classList.add('filled');
+    tab.textContent = langNames[code].split(' ')[0];
+    tab.onclick = () => {
+      contentLang = code;
+      $('contact-input').value = state.contact[code] || '';
+      renderContactLangTabs();
+      renderProjLangTabs(currentProject?.translations || {});
+    };
+    tabs.appendChild(tab);
+  });
+}
+
+// Zmiana języka treści w formularzu projektu
+function switchContentLang(code) {
+  // Zapisz aktualne wartości do kopii roboczej
+  if (currentProject) {
+    if (!currentProject.translations) currentProject.translations = {};
+    const title = $('proj-title').value.trim();
+    const desc = $('proj-desc').value.trim();
+    if (title || desc) currentProject.translations[contentLang] = { title, desc };
+    else delete currentProject.translations[contentLang];
+  } else {
+    // Nowy projekt – trzymamy w buforze
+    if (!newProjectBuffer) newProjectBuffer = {};
+    const title = $('proj-title').value.trim();
+    const desc = $('proj-desc').value.trim();
+    if (title || desc) newProjectBuffer[contentLang] = { title, desc };
+    else delete newProjectBuffer[contentLang];
+  }
+  
+  contentLang = code;
+  
+  // Załaduj wartości dla nowego języka
+  const source = currentProject?.translations || newProjectBuffer || {};
+  const t = source[contentLang] || { title: '', desc: '' };
+  $('proj-title').value = t.title || '';
+  $('proj-desc').value = t.desc || '';
+  
+  renderProjLangTabs(source);
+  renderContactLangTabs();
+}
+
+let newProjectBuffer = null;
+
+function startEdit(id) {
+  const p = state.projects.find(x => x.id === id);
+  if (!p) return;
+  editingId = id;
+  newProjectBuffer = null;
+  // Kopia robocza – nie modyfikujemy oryginału aż do zapisu
+  currentProject = JSON.parse(JSON.stringify(p));
+  contentLang = 'pl';
+  currentImage = p.image || '';
+  
+  $('form-title').innerText = 'Edytuj projekt (ID: ' + id + ')';
+  $('btn-save').innerText = 'Zapisz zmiany';
+  $('btn-cancel-edit').style.display = 'block';
+  $('edit-id').value = id;
+  
+  const t = currentProject.translations?.[contentLang] || { title: '', desc: '' };
+  $('proj-title').value = t.title || '';
+  $('proj-desc').value = t.desc || '';
+  updateImagePreview(currentImage);
+  $('proj-image').dataset.existing = currentImage;
+  
+  renderProjLangTabs(currentProject.translations || {});
+  renderContactLangTabs();
+}
+
+function resetForm() {
+  editingId = null;
+  currentProject = null;
+  newProjectBuffer = null;
+  currentImage = '';
+  $('project-form').reset();
+  $('edit-id').value = '';
+  $('form-title').innerText = 'Dodaj nowy projekt';
+  $('btn-save').innerText = 'Zapisz w tym języku';
+  $('btn-cancel-edit').style.display = 'none';
+  $('proj-image').dataset.existing = '';
+  updateImagePreview('');
+  contentLang = 'pl';
+  renderProjLangTabs({});
+}
+$('btn-cancel-edit').onclick = resetForm;
+
+function updateImagePreview(url) {
+  const p = $('image-preview');
+  if (url) { p.style.backgroundImage = `url(${url})`; p.innerText = ''; }
+  else { p.style.backgroundImage = 'none'; p.innerText = 'Brak zdjęcia'; }
+}
+
+$('proj-image').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => updateImagePreview(ev.target.result);
+  reader.readAsDataURL(file);
+});
+
+// ZAPIS PROJEKTU (dodanie lub aktualizacja tłumaczeń)
+$('project-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const btn = $('btn-save');
+  btn.disabled = true;
+  const msg = $('proj-msg');
+  
+  try {
+    // Zbierz aktualne wartości z formularza
+    const title = $('proj-title').value.trim();
+    const desc = $('proj-desc').value.trim();
+    
+    // Zbuduj pełny obiekt tłumaczeń
+    let allTranslations = {};
+    if (editingId && currentProject) {
+      allTranslations = { ...(currentProject.translations || {}) };
+    } else if (newProjectBuffer) {
+      allTranslations = { ...newProjectBuffer };
+    }
+    if (title || desc) {
+      allTranslations[contentLang] = { title, desc };
+    } else {
+      delete allTranslations[contentLang];
+    }
+    
+    // Walidacja: musi być co najmniej jedno tłumaczenie z tytułem i opisem
+    const valid = Object.values(allTranslations).some(t => t.title && t.desc);
+    if (!valid) {
+      showMsg(msg, 'Wypełnij tytuł i opis w co najmniej jednym języku', false);
+      btn.disabled = false;
+      return;
+    }
+    
+    const fd = new FormData();
+    if (editingId) fd.append('id', editingId);
+    fd.append('translations', JSON.stringify(allTranslations));
+    fd.append('existing_image', $('proj-image').dataset.existing || '');
+    const file = $('proj-image').files[0];
+    if (file) fd.append('image', file);
+    
+    await api('save_project', fd);
+    await loadAll();
+    resetForm();
+    showMsg(msg, 'Zapisano ✓', true);
+  } catch (err) {
+    showMsg(msg, 'Błąd: ' + err.message, false);
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+function renderAdminList() {
+  const list = $('admin-list');
+  list.innerHTML = '';
+  state.projects.forEach(p => {
+    // Pokaż tytuł w polskim lub pierwszym dostępnym
+    const t = p.translations?.pl || Object.values(p.translations || {})[0] || { title: 'Bez tytułu' };
+    // Lista wypełnionych języków
+    const filledLangs = Object.keys(p.translations || {}).map(c => langNames[c].split(' ')[0]).join(', ');
+    const li = document.createElement('li');
+    li.innerHTML = `<span>
+      <strong>${esc(t.title)}</strong>
+      <br><small style="color:#888">🌐 ${esc(filledLangs || 'brak')}</small>
+    </span>
+      <div>
+        <button class="btn btn-edit" data-edit="${p.id}">Edytuj</button>
+        <button class="btn btn-danger" data-del="${p.id}">Usuń</button>
+      </div>`;
+    list.appendChild(li);
+  });
+  list.querySelectorAll('[data-edit]').forEach(b => b.onclick = () => startEdit(+b.dataset.edit));
+  list.querySelectorAll('[data-del]').forEach(b => b.onclick = () => deleteProject(+b.dataset.del));
+}
+
+async function loadAll() {
+  try {
+    const data = await api('get_all');
+    state.projects = data.projects || [];
+    state.contact = data.contact || {};
+    renderProjects();
+    renderContact();
+    renderAdminList();
+  } catch (e) { console.error(e); }
+}
+
+async function deleteProject(id) {
+  if (!confirm('Usunąć ten projekt?')) return;
+  try {
+    await api('delete_project', { id });
+    await loadAll();
+    if (editingId === id) resetForm();
+  } catch (err) { alert('Błąd: ' + err.message); }
+}
+
+// ============ KONTAKT ============
+$('contact-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const msg = $('contact-msg');
+  try {
+    await api('save_contact', { lang: contentLang, contact: $('contact-input').value });
+    state.contact[contentLang] = $('contact-input').value;
+    renderContact();
+    renderContactLangTabs();
+    renderProjLangTabs(currentProject?.translations || {});
+    showMsg(msg, 'Zapisano ✓', true);
+  } catch (err) { showMsg(msg, 'Błąd: ' + err.message, false); }
+});
+
+// ============ ZMIANA HASŁA ============
+$('password-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const msg = $('pass-msg');
+  const oldP = $('pass-old').value, newP = $('pass-new').value, conf = $('pass-confirm').value;
+  if (newP !== conf) return showMsg(msg, 'Nowe hasła nie są identyczne', false);
+  if (newP.length < 6) return showMsg(msg, 'Min. 6 znaków', false);
+  try {
+    await api('change_password', { old: oldP, new: newP });
+    $('password-form').reset();
+    showMsg(msg, 'Hasło zmienione ✓', true);
+  } catch (err) { showMsg(msg, err.message, false); }
+});
+
+// ============ LOGOWANIE ============
+function openLogin() {
+  if (isLoggedIn) { $('admin-panel').classList.add('open'); return; }
+  $('login-modal').classList.add('active');
+  $('login-password').value = '';
+  setTimeout(() => $('login-password').focus(), 100);
+}
+
+$('login-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const btn = $('login-btn'), msg = $('login-msg');
+  btn.disabled = true; btn.innerText = 'Logowanie...';
+  try {
+    await api('login', { password: $('login-password').value });
+    isLoggedIn = true;
+    $('login-modal').classList.remove('active');
+    $('admin-panel').classList.add('open');
+    renderProjLangTabs({});
+    renderContactLangTabs();
+    renderAdminList();
+  } catch (err) { showMsg(msg, err.message, false); }
+  finally { btn.disabled = false; btn.innerText = 'Zaloguj'; }
+});
+
+$('login-cancel').onclick = () => $('login-modal').classList.remove('active');
+$('close-admin').onclick = () => $('admin-panel').classList.remove('open');
+
+$('logout-btn').onclick = async () => {
+  try { await api('logout', {}); } catch(e) {}
+  isLoggedIn = false;
+  $('admin-panel').classList.remove('open');
+  resetForm();
+};
+
+document.addEventListener('keydown', e => {
+  if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'l') {
+    e.preventDefault();
+    openLogin();
+  }
+});
+if (new URLSearchParams(location.search).get('admin') === 'true') {
+  setTimeout(openLogin, 200);
+  history.replaceState({}, '', location.pathname);
+}
+
+// ============ WYBÓR JĘZYKA INTERFEJSU ============
+(function initLang() {
+  const s = $('lang-select');
+  allLangs.forEach(code => {
+    const o = document.createElement('option');
+    o.value = code; o.textContent = langNames[code];
+    if (code === currentLang) o.selected = true;
+    s.appendChild(o);
+  });
+  s.addEventListener('change', e => {
+    currentLang = e.target.value;
+    localStorage.setItem('allfabet_lang', currentLang);
+    applyTranslations();
+    renderProjects();
+    renderContact();
+  });
+})();
+
+async function init() {
+  applyTranslations();
+  await loadAll();
+  renderProjLangTabs({});
+  renderContactLangTabs();
+  try {
+    const r = await api('check_session');
+    if (r.logged_in) isLoggedIn = true;
+  } catch(e) {}
+}
+init();
+</script>
+</body>
+</html>
